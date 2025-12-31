@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Banco de Dados Central (PostgreSQL)
+  # Em produção, usaríamos instâncias separadas ou schemas separados
+  postgres:
+    image: postgres:15-alpine
+    container_name: nexopro_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: nexopro_core
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Cache & Mensageria (Redis)
+  redis:
+    image: redis:alpine
+    container_name: nexopro_redis
+    ports:
+      - "6379:6379"
+
+  # Message Broker (RabbitMQ) - Para comunicação assíncrona entre serviços
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: nexopro_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+volumes:
+  postgres_data:

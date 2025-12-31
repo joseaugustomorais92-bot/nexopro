@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@nexopro/shared-types": ["../../packages/shared-types/src"],
+      "@nexopro/logger": ["../../packages/logger/src"]
+    }
+  },
+  "include": ["src/**/*"]
+}
