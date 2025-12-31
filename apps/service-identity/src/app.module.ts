@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { User } from './users/user.entity';
 import { Tenant } from './tenants/tenant.entity';
 import { AuthModule } from './auth/auth.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     TypeOrmModule.forFeature([User, Tenant]),
     AuthModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [],

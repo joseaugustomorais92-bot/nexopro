@@ -4,33 +4,52 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardLayout } from '../../components/dashboard/DashboardLayout';
 import { Icons } from '../../components/ui/Icons';
+import { useToast } from '../../components/ui/Toast';
 
 export default function DashboardPage() {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
     if (!token) {
       router.push('/login');
     } else {
       try {
-        // Decode token (simple version)
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setUser(payload);
+        if (userData) {
+          const parsedUser = JSON.parse(userData);
+          setUser(parsedUser);
+          showToast(`Bem-vindo de volta, ${parsedUser.name || 'Usuário'}!`, 'success');
+        } else {
+           // Fallback decode token (simple version)
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setUser(payload);
+        }
       } catch (e) {
+        localStorage.removeItem('token');
         router.push('/login');
       }
     }
-  }, [router]);
+  }, [router, showToast]);
 
-  if (!user) return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#666' }}>Carregando sistema...</div>;
+  if (!user) return (
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: '1rem' }}>
+      <div style={{ width: '40px', height: '40px', border: '4px solid #f3f3f3', borderTop: '4px solid #3498db', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+      <div style={{ color: '#666', fontWeight: 500 }}>Carregando ecossistema...</div>
+      <style jsx>{`
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+      `}</style>
+    </div>
+  );
 
   const stats = [
-    { title: 'Receita Total', value: 'R$ 4.5M', icon: Icons.Chart, color: '#28a745', bg: '#e8f5e9' },
-    { title: 'Novos Usuários', value: '3,200', icon: Icons.User, color: '#17a2b8', bg: '#e0f7fa' },
-    { title: 'Projetos Ativos', value: '85', icon: Icons.Building, color: '#ffc107', bg: '#fff3cd' },
-    { title: 'Alertas de Segurança', value: '12', icon: Icons.Shield, color: '#dc3545', bg: '#f8d7da' },
+    { title: 'Receita Total', value: 'R$ 0,00', icon: Icons.Chart, color: '#28a745', bg: '#e8f5e9' },
+    { title: 'Usuários Ativos', value: '1', icon: Icons.User, color: '#17a2b8', bg: '#e0f7fa' },
+    { title: 'Módulos Ativos', value: '3', icon: Icons.Building, color: '#ffc107', bg: '#fff3cd' },
+    { title: 'Segurança', value: '100%', icon: Icons.Shield, color: '#0ea5e9', bg: '#e0f2fe' },
   ];
 
   return (
