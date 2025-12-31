@@ -16,24 +16,27 @@ import { AuthModule } from './auth/auth.module';
     CacheModule.register({
       isGlobal: true,
       store: redisStore,
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
+      url: process.env.REDIS_URL, // Support for Railway REDIS_URL
+      host: process.env.REDIS_URL ? undefined : (process.env.REDIS_HOST || 'localhost'),
+      port: process.env.REDIS_URL ? undefined : parseInt(process.env.REDIS_PORT || '6379'),
       ttl: 600, // 10 minutes cache
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USER || 'admin',
-      password: process.env.DB_PASSWORD || 'password',
-      database: process.env.DB_NAME || 'nexopro_core',
+      url: process.env.DATABASE_URL, // Support for Railway DATABASE_URL
+      host: process.env.DATABASE_URL ? undefined : (process.env.DB_HOST || 'localhost'),
+      port: process.env.DATABASE_URL ? undefined : parseInt(process.env.DB_PORT || '5432'),
+      username: process.env.DATABASE_URL ? undefined : (process.env.DB_USER || 'admin'),
+      password: process.env.DATABASE_URL ? undefined : (process.env.DB_PASSWORD || 'password'),
+      database: process.env.DATABASE_URL ? undefined : (process.env.DB_NAME || 'nexopro_core'),
       entities: [User, Tenant],
-      synchronize: true,
+      synchronize: true, // Auto-create tables (Disable in production if using migrations)
       extra: {
-        max: 50, // Increase pool size for high concurrency
+        max: 50,
         connectionTimeoutMillis: 5000,
         idleTimeoutMillis: 30000,
       },
+      ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false, // Enable SSL for Railway
     }),
     TypeOrmModule.forFeature([User, Tenant]),
     AuthModule,
