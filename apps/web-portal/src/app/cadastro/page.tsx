@@ -53,8 +53,9 @@ export default function CadastroPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-      // API Call to API Gateway which proxies to Identity Service
-      const response = await fetch(`${apiUrl}/api/identity/auth/register-tenant`, {
+      // API Call to Identity Service (Railway)
+      // Note: Backend global prefix is 'api/v1/identity'
+      const response = await fetch(`${apiUrl}/api/v1/identity/auth/register-tenant`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
