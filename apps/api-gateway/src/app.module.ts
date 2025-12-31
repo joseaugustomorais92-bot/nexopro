@@ -34,6 +34,6 @@ export class AppModule {
           },
         }),
       )
-      .forRoutes({ path: 'api/identity*', method: RequestMethod.ALL });
+      .forRoutes({ path: 'api/identity*', method: RequestMethod.ALL }, { path: 'api/v1/identity*', method: RequestMethod.ALL });
   }
 }
