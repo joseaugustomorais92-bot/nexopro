@@ -1,57 +1,44 @@
-# 🚀 Guia de Deploy - NEXOPRO
+# 🚀 Guia de Deploy e Operação - NEXOPRO
 
-Este projeto é um monorepo (Nx-style) contendo Frontend e Backend.
-
-## 🏗️ Estrutura
-
-- **Frontend:** `apps/web-portal` (Next.js)
-- **Backend Identity:** `apps/service-identity` (NestJS)
-- **Backend Gateway:** `apps/api-gateway` (NestJS)
-- **Pacotes Compartilhados:** `packages/*`
+## 🔗 Links Rápidos
+- **Frontend (Acesso Público):** [Painel Vercel](https://vercel.com/dashboard) (O link final estará aqui)
+- **Backend (API):** [Painel Railway](https://railway.app/dashboard)
 
 ---
 
-## ☁️ 1. Deploy do Backend (Railway)
+## 🔄 Como Atualizar o Sistema (Deploy Contínuo)
 
-O Backend deve ser hospedado em um serviço que suporte Docker e Microserviços (Recomendado: Railway).
+O sistema está configurado com **Integração Contínua (CI/CD)**. Isso significa que qualquer alteração enviada para o GitHub dispara automaticamente a atualização nos servidores.
 
-### Passos:
-1. Crie um projeto no [Railway](https://railway.app).
-2. Conecte este repositório GitHub.
-3. **Crie o Serviço de Identidade**:
-   - Adicione o repo.
-   - Nas configurações (Settings) > Build:
-     - **Dockerfile Path:** `Dockerfile.identity`
-   - Variáveis de Ambiente:
-     - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (PostgreSQL)
-     - `REDIS_HOST`, `REDIS_PORT` (Redis)
-4. **Crie o Serviço de Gateway**:
-   - Adicione o repo novamente.
-   - Nas configurações (Settings) > Build:
-     - **Dockerfile Path:** `Dockerfile.gateway`
-   - Variáveis de Ambiente:
-     - `IDENTITY_SERVICE_URL`: URL do serviço de identidade acima (ex: `http://service-identity-production.up.railway.app`)
+### Opção 1: Usando o Script Automático (Recomendado)
+1. Na pasta raiz do projeto, clique duas vezes em `deploy.bat`.
+2. Digite uma mensagem descrevendo o que mudou (ex: "ajuste na cor do botão").
+3. Pressione Enter. O script fará tudo sozinho.
+
+### Opção 2: Manualmente via Terminal
+```bash
+git add .
+git commit -m "descrição da mudança"
+git push origin main
+```
 
 ---
 
-## 🌐 2. Deploy do Frontend (Vercel)
+## ⚙️ Configuração Inicial (Se ainda não fez)
 
-O Frontend é otimizado para a Vercel.
+### 1. Conectar Backend (Railway)
+1. Crie projeto no [Railway](https://railway.app) e conecte o GitHub `nexopro`.
+2. Adicione Serviço **Identity** (`Dockerfile.identity`) e **Gateway** (`Dockerfile.gateway`).
+3. Adicione **PostgreSQL** e **Redis**.
+4. Defina as Variáveis no Railway (copie do `.env` local).
 
-### Passos:
-1. Crie um projeto na [Vercel](https://vercel.com).
-2. Importe este repositório.
-3. Nas configurações do projeto:
-   - **Root Directory:** `apps/web-portal` (Clique em Edit)
-   - **Framework Preset:** Next.js (Automático)
-4. Variáveis de Ambiente:
-   - `NEXT_PUBLIC_API_URL`: URL do seu **API Gateway** no Railway (ex: `https://api-gateway-production.up.railway.app`)
-5. Clique em **Deploy**.
+### 2. Conectar Frontend (Vercel)
+1. Crie projeto na [Vercel](https://vercel.com) e importe `nexopro`.
+2. Raiz: `apps/web-portal`.
+3. Variável `NEXT_PUBLIC_API_URL`: Cole a URL do Gateway do Railway.
 
 ---
 
-## 🛠️ Desenvolvimento Local
-
-1. `docker-compose up -d` (Inicia Banco e Redis)
-2. `npm install`
-3. `npm run dev` (Inicia todos os serviços)
+## 🛠️ Monitoramento
+- Se o site não carregar dados, verifique se a variável `NEXT_PUBLIC_API_URL` na Vercel está correta (não deve ter barra `/` no final).
+- Se o login falhar, verifique os logs no Railway (Service Identity).

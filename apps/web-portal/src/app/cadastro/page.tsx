@@ -60,8 +60,9 @@ export default function CadastroPage() {
         body: JSON.stringify(formData)
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.message || 'Erro ao criar conta');
       }
 

@@ -64,7 +64,7 @@ export function Topbar({ user }: { user: any }) {
 
         {/* User Profile */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', cursor: 'pointer' }}>
-          <div style={{ textAlign: 'right', display: 'none', md: 'block' }}>
+          <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e293b' }}>{user?.name || 'Usuário'}</div>
             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{user?.role || 'Admin'}</div>
           </div>
