@@ -68,20 +68,18 @@ export function Topbar({ user }: { user: any }) {
             <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#1e293b' }}>{user?.name || 'Usuário'}</div>
             <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{user?.role || 'Admin'}</div>
           </div>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '50%',
-            backgroundColor: '#0ea5e9',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontWeight: 'bold',
-            fontSize: '1.2rem'
-          }}>
-            {user?.name ? user.name.charAt(0).toUpperCase() : 'U'}
-          </div>
+          <img 
+            src="https://avatars.githubusercontent.com/u/252062966?v=4" 
+            alt="User Avatar"
+            style={{
+              width: '40px',
+              height: '40px',
+              borderRadius: '50%',
+              objectFit: 'cover',
+              border: '2px solid #e2e8f0',
+              cursor: 'pointer'
+            }}
+          />
         </div>
       </div>
     </header>

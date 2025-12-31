@@ -48,8 +48,14 @@ export function Sidebar() {
         borderBottom: '1px solid #333',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        gap: '0.75rem'
       }}>
+        <img 
+          src="https://avatars.githubusercontent.com/u/252062966?v=4" 
+          alt="NEXOPRO Logo"
+          style={{ width: '32px', height: '32px', borderRadius: '6px' }} 
+        />
         <span style={{ 
           fontSize: '1.5rem', 
           fontWeight: 'bold', 
