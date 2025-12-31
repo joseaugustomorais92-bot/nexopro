@@ -29,18 +29,68 @@ export class AuthService {
     if (!user) {
       user = await this.usersRepository.findOne({ where: { email }, relations: ['tenant'] });
       if (user) {
-        // Cache user for 5 minutes (TTL in seconds or milliseconds depending on store, default is often ms in v5, s in v4/Nest)
-        // NestJS Cache Manager default TTL is usually milliseconds in v5, but check config.
-        // We set global TTL to 600 (seconds) in app.module, but here we can override.
+        // Cache user for 5 minutes
         await this.cacheManager.set(cacheKey, user);
       }
     }
 
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    if (user && user.password && (await bcrypt.compare(pass, user.password))) {
       const { password, ...result } = user;
       return result;
     }
     return null;
+  }
+
+  async validateGoogleUser(googleUser: any): Promise<any> {
+    const { email, firstName, lastName, googleId, picture } = googleUser;
+    
+    // 1. Check if user exists
+    let user = await this.usersRepository.findOne({ where: { email }, relations: ['tenant'] });
+
+    if (user) {
+      // Update googleId if missing
+      if (!user.googleId) {
+        user.googleId = googleId;
+        await this.usersRepository.save(user);
+      }
+      return user;
+    }
+
+    // 2. Create new User + Default Tenant (Transactional)
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      // Create Default Tenant
+      const tenant = new Tenant();
+      tenant.name = `${firstName}'s Workspace`;
+      tenant.type = CompanyType.SERVICOS; // Default
+      tenant.isActive = true;
+      const savedTenant = await queryRunner.manager.save(tenant);
+
+      // Create User
+      const newUser = new User();
+      newUser.name = `${firstName} ${lastName}`;
+      newUser.email = email;
+      newUser.googleId = googleId;
+      newUser.password = ''; // No password for OAuth users
+      newUser.role = UserRole.ADMIN;
+      newUser.tenant = savedTenant;
+      
+      const savedUser = await queryRunner.manager.save(newUser);
+
+      await queryRunner.commitTransaction();
+      
+      // Return user with tenant for login payload
+      savedUser.tenant = savedTenant;
+      return savedUser;
+    } catch (err) {
+      await queryRunner.rollbackTransaction();
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async login(user: any) {

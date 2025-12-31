@@ -17,6 +17,9 @@ export class User implements IUser {
   @Column()
   password: string;
 
+  @Column({ nullable: true })
+  googleId: string;
+
   @Column({
     type: 'enum',
     enum: UserRole,
